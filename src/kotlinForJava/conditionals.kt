@@ -7,6 +7,7 @@ enum class Color {
 }
 
 open class Pet {}
+
 class Cat : Pet() {
     fun meow(): String = "meow"
 }
@@ -24,7 +25,7 @@ fun main() {
         return max
     }
 
-    //    fun getDescription(color: Color): String =
+//        fun getDescription(color: Color): String =
 //        when (color) {
 //            Color.RED -> "hot"
 //            Color.GREEN -> "mild"
@@ -50,7 +51,7 @@ fun main() {
             else -> 0
         }
 
-    //since 1.3 allowed to inline in when()
+    //since 1.3 allowed to inline val in when()
     when (val pet = getAnyPet()) {
         is Cat -> pet.meow() //already casted to Cat
         is Dog -> pet.woof()
