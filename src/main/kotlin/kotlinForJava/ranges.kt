@@ -2,8 +2,8 @@ package kotlinForJava
 
 fun isLetter(c: Char) = c in 'a'..'z' || c in 'A'..'Z' //in
 fun isNotDigit(c: Char) = c !in '0'..'9' //not in
-fun regonize(c: Char) = when(c) {
-    in '0' .. '9' -> "it's a digit"
+fun regonize(c: Char) = when (c) {
+    in '0'..'9' -> "it's a digit"
     in 'a'..'z', in 'A'..'Z' -> "it's a letter"
     else -> "not regonizable"
 }
@@ -20,6 +20,17 @@ fun isValidIdentifier(s: String): Boolean {
     return s.matches("^[a-zA-Z_][\\w_]*".toRegex())
 }
 
+fun isValidIdentifierLector(s: String): Boolean {
+    fun isValidCharacter(ch: Char) = ch == '_' || ch.isLetterOrDigit()
+            //ch in '0'..'9' ||
+            //ch in 'a'..'z' || ch in 'A'..'Z'
+    if (s.isEmpty() || s[0].isDigit()) return false
+    for (ch in s) {
+        if (!isValidCharacter(ch)) return false
+    }
+    return true
+}
+
 fun main(args: Array<String>) {
 //    for (i in 'a' .. 'z') {}
 //    val ch: Char = '0'
@@ -32,14 +43,17 @@ fun main(args: Array<String>) {
 //    "ab" .. "az" ClosedRange<String>
 //    startDate .. endDate ClosedRange<MyData>
 
-    val res = "ball" in "a" .. "k"
+    val res = "ball" in "a".."k"
     println(res)
     val myDate: MyDate = MyDate()
     val startDate = MyDate()
     val endDate = MyDate()
-    if (myDate.compareTo(startDate) >= 0 && myDate.compareTo(endDate) <= 0) {}
-    if (myDate >= startDate && myDate <= endDate) {}
-    if (myDate in startDate .. endDate) {}
+    if (myDate.compareTo(startDate) >= 0 && myDate.compareTo(endDate) <= 0) {
+    }
+    if (myDate >= startDate && myDate <= endDate) {
+    }
+    if (myDate in startDate..endDate) {
+    }
 
     //check belonging to list
     //if (element in list) {}
