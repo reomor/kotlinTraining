@@ -8,6 +8,8 @@ fun String.lastChar(): Char = get(length - 1) //without this inside extension fu
 //import static ExtensionFunction.kt.lastChar;
 //char c = lastChar("string")
 
+//to use it ine Java
+//ExtensionFunction.kt.repeat("string", n)
 fun String.repeat(n: Int): String {
     val sb = StringBuilder(n * length)
     for (i in 1..n) {
@@ -15,9 +17,8 @@ fun String.repeat(n: Int): String {
     }
     return sb.toString()
 }
-//to use it ine Java
-//ExtensionFunction.kt.repeat("string", n)
 
+//shadowed by
 fun String.get(index: Int) = "*"
 
 fun main() {
