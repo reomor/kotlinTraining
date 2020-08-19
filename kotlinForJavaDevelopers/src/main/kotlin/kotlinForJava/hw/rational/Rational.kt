@@ -3,12 +3,45 @@ package kotlinForJava.hw.rational
 import java.lang.IllegalArgumentException
 import java.math.BigInteger
 
-data class Rational(val numerator: BigInteger, val denominator: BigInteger) : Comparable<Rational> {
+/*
+@Suppress("DataClassPrivateConstructor")
+data class RationalData
+private constructor(val n: BigInteger, val d: BigInteger) : Comparable<RationalData> {
+    override fun compareTo(other: RationalData): Int {
+        val left = this.n * other.d
+        val right = other.n * this.d
+        return left.minus(right).signum()
+    }
+
+    companion object {
+        fun create(n: BigInteger, d: BigInteger): RationalData  {
+            TODO()}
+        fun normalize(n: BigInteger, d: BigInteger): RationalData {
+                    val signum = denominator.signum().toBigInteger()
+        val gcd = numerator.gcd(denominator)
+        return RationalData(
+            numerator / gcd * signum,
+            denominator / gcd * signum
+        )
+        }
+    }
+}
+*/
+
+class Rational(n: BigInteger, d: BigInteger) : Comparable<Rational> {
+
+    val numerator: BigInteger
+    val denominator: BigInteger
+
+    init {
+        val signum = d.signum().toBigInteger()
+        val gcd = n.gcd(d)
+        numerator = n / gcd * signum
+        denominator = d / gcd * signum
+    }
 
     override fun compareTo(other: Rational): Int {
-        val left = this.numerator * other.denominator
-        val right = other.numerator * this.denominator
-        return left.minus(right).signum()
+        return (numerator * other.denominator).minus(other.numerator * denominator).signum()
     }
 
     override fun toString(): String {
@@ -16,6 +49,24 @@ data class Rational(val numerator: BigInteger, val denominator: BigInteger) : Co
             return "$numerator"
         }
         return "$numerator/$denominator"
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as Rational
+
+        if (numerator != other.numerator) return false
+        if (denominator != other.denominator) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = numerator.hashCode()
+        result = 31 * result + denominator.hashCode()
+        return result
     }
 }
 
@@ -25,36 +76,40 @@ class RationalRange<Rational : Comparable<Rational>>(
 ) : ClosedRange<Rational>
 
 operator fun Rational.plus(other: Rational) =
-    (this.numerator * other.denominator + other.numerator * this.denominator) divBy
-        (this.denominator * other.denominator)
+    Rational(
+        this.numerator * other.denominator + other.numerator * this.denominator,
+        this.denominator * other.denominator
+    )
 
 operator fun Rational.minus(other: Rational) =
-    (this.numerator * other.denominator - other.numerator * this.denominator) divBy
-        (this.denominator * other.denominator)
+    Rational(
+        this.numerator * other.denominator - other.numerator * this.denominator,
+        this.denominator * other.denominator
+    )
 
 operator fun Rational.times(other: Rational) =
-    (this.numerator * other.numerator) divBy
-        (this.denominator * other.denominator)
+    Rational(
+        this.numerator * other.numerator,
+        this.denominator * other.denominator
+    )
 
 operator fun Rational.div(other: Rational) =
-    (this.numerator * other.denominator) divBy (this.denominator * other.numerator)
+    Rational(this.numerator * other.denominator, this.denominator * other.numerator)
 
 operator fun Rational.unaryMinus() =
-    (-this.numerator) divBy (this.denominator)
+    Rational(-this.numerator, this.denominator)
 
 operator fun Rational.rangeTo(end: Rational) = RationalRange(this, end)
 
 fun String.toRational(): Rational {
-    val split = this.split("/").map { BigInteger(it) }
-    return when (split.size) {
-        1 -> {
-            split[0] divBy BigInteger.ONE
-        }
-        2 -> {
-            split[0] divBy split[1]
-        }
-        else -> throw IllegalArgumentException("Number of params not equals 2")
+    fun String.toBigIntegerOrFail() = toBigIntegerOrNull() ?: throw IllegalArgumentException(
+        "Expecting rational in the form of 'n/d' or 'n', but get: '${this@toRational}'"
+    )
+    if (!contains("/")) {
+        return Rational(toBigIntegerOrFail(), BigInteger.ONE)
     }
+    val (numer, denum) = split("/")
+    return Rational(numer.toBigIntegerOrFail(), denum.toBigIntegerOrFail())
 }
 
 infix fun Int.divBy(other: Int): Rational = BigInteger(this.toString()) divBy BigInteger(other.toString())
